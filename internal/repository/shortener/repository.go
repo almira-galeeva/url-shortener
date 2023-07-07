@@ -1,23 +1,65 @@
 package repository
 
-import "context"
+import (
+	"context"
+
+	sq "github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v4/pgxpool"
+)
+
+const tableName = "urls"
 
 type Repository interface {
-	GetShortUrl(ctx context.Context, originalUrl string) (string, error)
+	CreateUrl(ctx context.Context, originalUrl string, shortUrl string) error
 	GetOriginalUrl(ctx context.Context, shortlUrl string) (string, error)
 }
 
 type repository struct {
+	pool *pgxpool.Pool
 }
 
-func NewRepository() Repository {
-	return &repository{}
+func NewRepository(pool *pgxpool.Pool) Repository {
+	return &repository{
+		pool: pool,
+	}
+}
+
+func (r *repository) CreateUrl(ctx context.Context, originalUrl string, shortUrl string) error {
+	builder := sq.Insert(tableName).
+		PlaceholderFormat(sq.Dollar).
+		Columns("original_url, short_url").
+		Values(originalUrl, shortUrl)
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = r.pool.Exec(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *repository) GetOriginalUrl(ctx context.Context, shortlUrl string) (string, error) {
-	return "", nil
-}
+	builder := sq.Select("original_url").
+		PlaceholderFormat(sq.Dollar).
+		From(tableName).
+		Where(sq.Eq{"short_url": shortlUrl}).
+		Limit(1)
 
-func (r *repository) GetShortUrl(ctx context.Context, originalUrl string) (string, error) {
-	return "", nil
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return "", err
+	}
+
+	var originalUrl string
+	err = r.pool.QueryRow(ctx, query, args...).Scan(&originalUrl)
+	if err != nil {
+		return "", err
+	}
+
+	return originalUrl, nil
 }

@@ -3,7 +3,8 @@ package shortener
 import "context"
 
 func (s *service) GetShortUrl(ctx context.Context, originalUrl string) (string, error) {
-	shortUrl, err := s.shortenerRepository.GetShortUrl(ctx, originalUrl)
+	shortUrl := "hjgfhjl"
+	err := s.shortenerRepository.CreateUrl(ctx, originalUrl, shortUrl)
 	if err != nil {
 		return "", err
 	}

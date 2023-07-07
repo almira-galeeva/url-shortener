@@ -1,0 +1,16 @@
+version: '3.8'
+
+volumes:
+  postgres_volume:
+
+services:
+  db:
+    image: postgres:14-alpine3.16
+    environment:
+      - "POSTGRES_DB=shortener-service"
+      - "POSTGRES_USER=shortener-service-user"
+      - "POSTGRES_PASSWORD=shortener-password"
+    ports:
+      - "54321:5432"
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data

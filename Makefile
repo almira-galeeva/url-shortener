@@ -1,7 +1,7 @@
 LOCAL_BIN:=$(CURDIR)/bin
 
 LOCAL_MIGRATION_DIR=./migrations
-LOCAL_MIGRATION_DSN="host=localhost port=54321 dbname=url-shortener user=url-shortener password=url_shortener-password sslmode=disable"
+LOCAL_MIGRATION_DSN="host=localhost port=54321 dbname=shortener-service user=shortener-service-user password=shortener-password sslmode=disable"
 
 install-go-deps:
 	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1

@@ -22,8 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ShortenerV1Client interface {
-	ShortenUrl(ctx context.Context, in *ShortenUrlRequest, opts ...grpc.CallOption) (*ShortenUrlResponse, error)
-	OriginalUrl(ctx context.Context, in *OriginalUrlRequest, opts ...grpc.CallOption) (*OriginalUrlResponse, error)
+	GetShortUrl(ctx context.Context, in *GetShortUrlRequest, opts ...grpc.CallOption) (*GetShortUrlResponse, error)
+	GetOriginalUrl(ctx context.Context, in *GetOriginalUrlRequest, opts ...grpc.CallOption) (*GetOriginalUrlResponse, error)
 }
 
 type shortenerV1Client struct {
@@ -34,18 +34,18 @@ func NewShortenerV1Client(cc grpc.ClientConnInterface) ShortenerV1Client {
 	return &shortenerV1Client{cc}
 }
 
-func (c *shortenerV1Client) ShortenUrl(ctx context.Context, in *ShortenUrlRequest, opts ...grpc.CallOption) (*ShortenUrlResponse, error) {
-	out := new(ShortenUrlResponse)
-	err := c.cc.Invoke(ctx, "/api.shortener_v1.ShortenerV1/ShortenUrl", in, out, opts...)
+func (c *shortenerV1Client) GetShortUrl(ctx context.Context, in *GetShortUrlRequest, opts ...grpc.CallOption) (*GetShortUrlResponse, error) {
+	out := new(GetShortUrlResponse)
+	err := c.cc.Invoke(ctx, "/api.shortener_v1.ShortenerV1/GetShortUrl", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *shortenerV1Client) OriginalUrl(ctx context.Context, in *OriginalUrlRequest, opts ...grpc.CallOption) (*OriginalUrlResponse, error) {
-	out := new(OriginalUrlResponse)
-	err := c.cc.Invoke(ctx, "/api.shortener_v1.ShortenerV1/OriginalUrl", in, out, opts...)
+func (c *shortenerV1Client) GetOriginalUrl(ctx context.Context, in *GetOriginalUrlRequest, opts ...grpc.CallOption) (*GetOriginalUrlResponse, error) {
+	out := new(GetOriginalUrlResponse)
+	err := c.cc.Invoke(ctx, "/api.shortener_v1.ShortenerV1/GetOriginalUrl", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +56,8 @@ func (c *shortenerV1Client) OriginalUrl(ctx context.Context, in *OriginalUrlRequ
 // All implementations must embed UnimplementedShortenerV1Server
 // for forward compatibility
 type ShortenerV1Server interface {
-	ShortenUrl(context.Context, *ShortenUrlRequest) (*ShortenUrlResponse, error)
-	OriginalUrl(context.Context, *OriginalUrlRequest) (*OriginalUrlResponse, error)
+	GetShortUrl(context.Context, *GetShortUrlRequest) (*GetShortUrlResponse, error)
+	GetOriginalUrl(context.Context, *GetOriginalUrlRequest) (*GetOriginalUrlResponse, error)
 	mustEmbedUnimplementedShortenerV1Server()
 }
 
@@ -65,11 +65,11 @@ type ShortenerV1Server interface {
 type UnimplementedShortenerV1Server struct {
 }
 
-func (UnimplementedShortenerV1Server) ShortenUrl(context.Context, *ShortenUrlRequest) (*ShortenUrlResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ShortenUrl not implemented")
+func (UnimplementedShortenerV1Server) GetShortUrl(context.Context, *GetShortUrlRequest) (*GetShortUrlResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetShortUrl not implemented")
 }
-func (UnimplementedShortenerV1Server) OriginalUrl(context.Context, *OriginalUrlRequest) (*OriginalUrlResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method OriginalUrl not implemented")
+func (UnimplementedShortenerV1Server) GetOriginalUrl(context.Context, *GetOriginalUrlRequest) (*GetOriginalUrlResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOriginalUrl not implemented")
 }
 func (UnimplementedShortenerV1Server) mustEmbedUnimplementedShortenerV1Server() {}
 
@@ -84,38 +84,38 @@ func RegisterShortenerV1Server(s grpc.ServiceRegistrar, srv ShortenerV1Server) {
 	s.RegisterService(&ShortenerV1_ServiceDesc, srv)
 }
 
-func _ShortenerV1_ShortenUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ShortenUrlRequest)
+func _ShortenerV1_GetShortUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetShortUrlRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ShortenerV1Server).ShortenUrl(ctx, in)
+		return srv.(ShortenerV1Server).GetShortUrl(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.shortener_v1.ShortenerV1/ShortenUrl",
+		FullMethod: "/api.shortener_v1.ShortenerV1/GetShortUrl",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShortenerV1Server).ShortenUrl(ctx, req.(*ShortenUrlRequest))
+		return srv.(ShortenerV1Server).GetShortUrl(ctx, req.(*GetShortUrlRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ShortenerV1_OriginalUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OriginalUrlRequest)
+func _ShortenerV1_GetOriginalUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOriginalUrlRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ShortenerV1Server).OriginalUrl(ctx, in)
+		return srv.(ShortenerV1Server).GetOriginalUrl(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.shortener_v1.ShortenerV1/OriginalUrl",
+		FullMethod: "/api.shortener_v1.ShortenerV1/GetOriginalUrl",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShortenerV1Server).OriginalUrl(ctx, req.(*OriginalUrlRequest))
+		return srv.(ShortenerV1Server).GetOriginalUrl(ctx, req.(*GetOriginalUrlRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -128,12 +128,12 @@ var ShortenerV1_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ShortenerV1Server)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ShortenUrl",
-			Handler:    _ShortenerV1_ShortenUrl_Handler,
+			MethodName: "GetShortUrl",
+			Handler:    _ShortenerV1_GetShortUrl_Handler,
 		},
 		{
-			MethodName: "OriginalUrl",
-			Handler:    _ShortenerV1_OriginalUrl_Handler,
+			MethodName: "GetOriginalUrl",
+			Handler:    _ShortenerV1_GetOriginalUrl_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

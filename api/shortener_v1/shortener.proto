@@ -7,32 +7,32 @@ import "google/api/annotations.proto";
 option go_package = "github.com/almira-galeeva/url-shortener/pkg/shortener_v1";
 
 service ShortenerV1 {
-  rpc ShortenUrl (ShortenUrlRequest) returns (ShortenUrlResponse) {
+  rpc GetShortUrl (GetShortUrlRequest) returns (GetShortUrlResponse) {
     option (google.api.http) = {
       post: "/shortener/v1/shorten_url"
       body: "*"
     };
   }
 
-  rpc OriginalUrl (OriginalUrlRequest) returns (OriginalUrlResponse) {
+  rpc GetOriginalUrl (GetOriginalUrlRequest) returns (GetOriginalUrlResponse) {
     option (google.api.http) = {
       get: "/shortener/v1/original_url"
     };
   }
 }
 
-message ShortenUrlRequest {
-    string url = 1;
+message GetShortUrlRequest {
+    string original_url = 1;
 } 
 
-message ShortenUrlResponse {
-    string url = 1;
+message GetShortUrlResponse {
+    string short_url = 1;
 }
 
-message OriginalUrlRequest {
-    string url = 1;
+message GetOriginalUrlRequest {
+    string short_url = 1;
 } 
 
-message OriginalUrlResponse {
-    string url = 1;
+message GetOriginalUrlResponse {
+    string original_url = 1;
 } 

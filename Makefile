@@ -6,26 +6,23 @@ LOCAL_MIGRATION_DSN="host=localhost port=54321 dbname=url-shortener user=url-sho
 install-go-deps:
 	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1
 	GOBIN=$(LOCAL_BIN) go install -mod=mod google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
-	GOBIN=$(LOCAL_BIN) go install github.com/envoyproxy/protoc-gen-validate@v0.10.1
 	GOBIN=$(LOCAL_BIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.15.2
-	GOBIN=$(LOCAL_BIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.15.2
 	
 
 PHONY: generate
 generate:
 	mkdir -p pkg/shortener_v1
 	protoc --proto_path api/shortener_v1 --proto_path vendor.protogen \
-		   --go_out=pkg/shortener_v1 --go_opt=paths=import \
+		   --go_out=pkg/shortener_v1 --go_opt=paths=source_relative \
 		   --plugin=protoc-gen-go=bin/protoc-gen-go \
-		   --go-grpc_out=pkg/shortener_v1 --go-grpc_opt=paths=import \
+		   --go-grpc_out=pkg/shortener_v1 --go-grpc_opt=paths=source_relative \
 		   --plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
 		   --grpc-gateway_out=pkg/shortener_v1 \
 		   --plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
 		   --grpc-gateway_opt=logtostderr=true\
-		   --grpc-gateway_opt=paths=import \
+		   --grpc-gateway_opt=paths=source_relative \
 		  api/shortener_v1/shortener.proto
-	mv pkg/shortener_v1/github.com/almira-galeeva/url-shortener/pkg/shortener_v1/* pkg/shortener_v1
-	rm -rf pkg/shortener_v1/github.com
+
 
 PHONY: vendor-proto
 vendor-proto: .vendor-proto
@@ -37,12 +34,6 @@ PHONY: .vendor-proto
 		mkdir -p  vendor.protogen/google/ &&\
 		mv vendor.protogen/googleapis/google/api vendor.protogen/google &&\
 		rm -rf vendor.protogen/googleapis ;\
-	fi
-	@if [ ! -d vendor.protogen/github.com/envoyproxy ]; then \
-		mkdir -p vendor.protogen/validate &&\
-		git clone https://github.com/envoyproxy/protoc-gen-validate vendor.protogen/protoc-gen-validate &&\
-		mv vendor.protogen/protoc-gen-validate/validate/*.proto vendor.protogen/validate &&\
-		rm -rf vendor.protogen/protoc-gen-validate ;\
 	fi
 	@if [ ! -d vendor.protogen/google/protobuf ]; then \
 		git clone https://github.com/protocolbuffers/protobuf vendor.protogen/protobuf &&\

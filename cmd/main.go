@@ -11,6 +11,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/reflection"
 
 	impl "github.com/almira-galeeva/url-shortener/internal/api/shortener"
 	shortenerRepository "github.com/almira-galeeva/url-shortener/internal/repository/shortener"
@@ -67,6 +68,8 @@ func runGRPC() error {
 	}
 
 	s := grpc.NewServer()
+	reflection.Register(s)
+
 	shortenerRepository := shortenerRepository.NewRepository()
 	shortenerService := shortenerService.NewService(shortenerRepository)
 	desc.RegisterShortenerServer(s, impl.NewImplementation(shortenerService))

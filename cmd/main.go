@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"flag"
 	"log"
 	"net"
 	"net/http"
@@ -16,30 +16,35 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	impl "github.com/almira-galeeva/url-shortener/internal/api/shortener"
-	shortenerRepository "github.com/almira-galeeva/url-shortener/internal/repository/shortener"
+	config "github.com/almira-galeeva/url-shortener/internal/config"
+	iShortenerRepo "github.com/almira-galeeva/url-shortener/internal/repository/shortener"
+	dbShortenerRepo "github.com/almira-galeeva/url-shortener/internal/repository/shortener/db"
+	inMemoryShortenerRepo "github.com/almira-galeeva/url-shortener/internal/repository/shortener/inmemory"
 	shortenerService "github.com/almira-galeeva/url-shortener/internal/service/shortener"
 	desc "github.com/almira-galeeva/url-shortener/pkg/shortener"
 )
 
-const (
-	grpcHost = "localhost:50051"
-	httpHost = "localhost:8080"
-	dbHost   = "localhost"
-	dbPort   = "54321"
-	dbName   = "shortener-service"
-	user     = "shortener-service-user"
-	password = "shortener-password"
-	sslmode  = "disable"
-)
+var pathConfig string
+
+func init() {
+	flag.StringVar(&pathConfig, "config", "config/config.json", "path to config file")
+}
 
 func main() {
+	flag.Parse()
 	ctx := context.Background()
+
+	cfg, err := config.NewConfig(pathConfig)
+	if err != nil {
+		log.Fatalf("Failed to parse config: %s", err.Error())
+	}
+
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 
 	go func() {
 		defer wg.Done()
-		err := runHTTP(ctx)
+		err := runHTTP(ctx, cfg)
 		if err != nil {
 			log.Fatalf("Failed to run HTTP server: %s", err.Error())
 		}
@@ -47,7 +52,7 @@ func main() {
 
 	go func() {
 		defer wg.Done()
-		err := runGRPC(ctx)
+		err := runGRPC(ctx, cfg)
 		if err != nil {
 			log.Fatalf("Failed to run gRPC server: %s", err.Error())
 		}
@@ -56,21 +61,21 @@ func main() {
 	wg.Wait()
 }
 
-func runHTTP(ctx context.Context) error {
+func runHTTP(ctx context.Context, cfg *config.Config) error {
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := desc.RegisterShortenerHandlerFromEndpoint(ctx, mux, grpcHost, opts)
+	err := desc.RegisterShortenerHandlerFromEndpoint(ctx, mux, cfg.GRPC.GetAddress(), opts)
 	if err != nil {
 		return err
 	}
 
-	log.Printf("HTTP Server is running on host: %s", httpHost)
+	log.Printf("HTTP Server is running on host: %s", cfg.HTTP.GetAddress())
 
-	return http.ListenAndServe(httpHost, mux)
+	return http.ListenAndServe(cfg.HTTP.GetAddress(), mux)
 }
 
-func runGRPC(ctx context.Context) error {
-	listener, err := net.Listen("tcp", grpcHost)
+func runGRPC(ctx context.Context, cfg *config.Config) error {
+	listener, err := net.Listen("tcp", cfg.GRPC.GetAddress())
 	if err != nil {
 		return err
 	}
@@ -78,10 +83,7 @@ func runGRPC(ctx context.Context) error {
 	s := grpc.NewServer()
 	reflection.Register(s)
 
-	dbDsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		dbHost, dbPort, user, password, dbName, sslmode,
-	)
-	pgCfg, err := pgxpool.ParseConfig(dbDsn)
+	pgCfg, err := pgxpool.ParseConfig(cfg.DB.DSN)
 	if err != nil {
 		return err
 	}
@@ -91,11 +93,17 @@ func runGRPC(ctx context.Context) error {
 		return err
 	}
 
-	shortenerRepository := shortenerRepository.NewRepository(dbc)
+	var shortenerRepository iShortenerRepo.Repository
+	if cfg.DB.Source == "inmemory" {
+		shortenerRepository = inMemoryShortenerRepo.NewRepository()
+	} else if cfg.DB.Source == "db" {
+		shortenerRepository = dbShortenerRepo.NewRepository(dbc)
+	}
+
 	shortenerService := shortenerService.NewService(shortenerRepository)
 	desc.RegisterShortenerServer(s, impl.NewImplementation(shortenerService))
 
-	log.Printf("GRPC Server is running on host: %s", grpcHost)
+	log.Printf("GRPC Server is running on host: %s", cfg.GRPC.GetAddress())
 	if err = s.Serve(listener); err != nil {
 		return err
 	}

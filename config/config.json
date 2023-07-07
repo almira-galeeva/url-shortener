@@ -1,0 +1,14 @@
+{
+    "db": {
+      "dsn": "user=shortener-service-user dbname=shortener-service password=shortener-password host=localhost port=54321 sslmode=disable",
+      "source": "db"
+    },
+    "grpc": {
+      "host": "localhost",
+      "port": "50051"
+    },
+    "http": {
+      "host": "localhost",
+      "port": "8080"
+    }
+}

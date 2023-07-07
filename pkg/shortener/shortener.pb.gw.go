@@ -2,11 +2,11 @@
 // source: shortener.proto
 
 /*
-Package shortener_v1 is a reverse proxy.
+Package shortener is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package shortener_v1
+package shortener
 
 import (
 	"context"
@@ -31,7 +31,7 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_ShortenerV1_GetShortUrl_0(ctx context.Context, marshaler runtime.Marshaler, client ShortenerV1Client, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Shortener_GetShortUrl_0(ctx context.Context, marshaler runtime.Marshaler, client ShortenerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetShortUrlRequest
 	var metadata runtime.ServerMetadata
 
@@ -48,7 +48,7 @@ func request_ShortenerV1_GetShortUrl_0(ctx context.Context, marshaler runtime.Ma
 
 }
 
-func local_request_ShortenerV1_GetShortUrl_0(ctx context.Context, marshaler runtime.Marshaler, server ShortenerV1Server, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Shortener_GetShortUrl_0(ctx context.Context, marshaler runtime.Marshaler, server ShortenerServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetShortUrlRequest
 	var metadata runtime.ServerMetadata
 
@@ -66,17 +66,17 @@ func local_request_ShortenerV1_GetShortUrl_0(ctx context.Context, marshaler runt
 }
 
 var (
-	filter_ShortenerV1_GetOriginalUrl_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_Shortener_GetOriginalUrl_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_ShortenerV1_GetOriginalUrl_0(ctx context.Context, marshaler runtime.Marshaler, client ShortenerV1Client, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Shortener_GetOriginalUrl_0(ctx context.Context, marshaler runtime.Marshaler, client ShortenerClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetOriginalUrlRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ShortenerV1_GetOriginalUrl_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Shortener_GetOriginalUrl_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -85,14 +85,14 @@ func request_ShortenerV1_GetOriginalUrl_0(ctx context.Context, marshaler runtime
 
 }
 
-func local_request_ShortenerV1_GetOriginalUrl_0(ctx context.Context, marshaler runtime.Marshaler, server ShortenerV1Server, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_Shortener_GetOriginalUrl_0(ctx context.Context, marshaler runtime.Marshaler, server ShortenerServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetOriginalUrlRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ShortenerV1_GetOriginalUrl_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Shortener_GetOriginalUrl_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -101,13 +101,13 @@ func local_request_ShortenerV1_GetOriginalUrl_0(ctx context.Context, marshaler r
 
 }
 
-// RegisterShortenerV1HandlerServer registers the http handlers for service ShortenerV1 to "mux".
-// UnaryRPC     :call ShortenerV1Server directly.
+// RegisterShortenerHandlerServer registers the http handlers for service Shortener to "mux".
+// UnaryRPC     :call ShortenerServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterShortenerV1HandlerFromEndpoint instead.
-func RegisterShortenerV1HandlerServer(ctx context.Context, mux *runtime.ServeMux, server ShortenerV1Server) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterShortenerHandlerFromEndpoint instead.
+func RegisterShortenerHandlerServer(ctx context.Context, mux *runtime.ServeMux, server ShortenerServer) error {
 
-	mux.Handle("POST", pattern_ShortenerV1_GetShortUrl_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Shortener_GetShortUrl_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -115,12 +115,12 @@ func RegisterShortenerV1HandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.shortener_v1.ShortenerV1/GetShortUrl", runtime.WithHTTPPathPattern("/shortener/v1/shorten_url"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.shortener.Shortener/GetShortUrl", runtime.WithHTTPPathPattern("/shortener/v1/shorten_url"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ShortenerV1_GetShortUrl_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Shortener_GetShortUrl_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -128,11 +128,11 @@ func RegisterShortenerV1HandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_ShortenerV1_GetShortUrl_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Shortener_GetShortUrl_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ShortenerV1_GetOriginalUrl_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Shortener_GetOriginalUrl_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -140,12 +140,12 @@ func RegisterShortenerV1HandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.shortener_v1.ShortenerV1/GetOriginalUrl", runtime.WithHTTPPathPattern("/shortener/v1/original_url"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.shortener.Shortener/GetOriginalUrl", runtime.WithHTTPPathPattern("/shortener/v1/original_url"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ShortenerV1_GetOriginalUrl_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Shortener_GetOriginalUrl_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -153,16 +153,16 @@ func RegisterShortenerV1HandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_ShortenerV1_GetOriginalUrl_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Shortener_GetOriginalUrl_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterShortenerV1HandlerFromEndpoint is same as RegisterShortenerV1Handler but
+// RegisterShortenerHandlerFromEndpoint is same as RegisterShortenerHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterShortenerV1HandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterShortenerHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.DialContext(ctx, endpoint, opts...)
 	if err != nil {
 		return err
@@ -182,63 +182,63 @@ func RegisterShortenerV1HandlerFromEndpoint(ctx context.Context, mux *runtime.Se
 		}()
 	}()
 
-	return RegisterShortenerV1Handler(ctx, mux, conn)
+	return RegisterShortenerHandler(ctx, mux, conn)
 }
 
-// RegisterShortenerV1Handler registers the http handlers for service ShortenerV1 to "mux".
+// RegisterShortenerHandler registers the http handlers for service Shortener to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterShortenerV1Handler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterShortenerV1HandlerClient(ctx, mux, NewShortenerV1Client(conn))
+func RegisterShortenerHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterShortenerHandlerClient(ctx, mux, NewShortenerClient(conn))
 }
 
-// RegisterShortenerV1HandlerClient registers the http handlers for service ShortenerV1
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "ShortenerV1Client".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "ShortenerV1Client"
+// RegisterShortenerHandlerClient registers the http handlers for service Shortener
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "ShortenerClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "ShortenerClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "ShortenerV1Client" to call the correct interceptors.
-func RegisterShortenerV1HandlerClient(ctx context.Context, mux *runtime.ServeMux, client ShortenerV1Client) error {
+// "ShortenerClient" to call the correct interceptors.
+func RegisterShortenerHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ShortenerClient) error {
 
-	mux.Handle("POST", pattern_ShortenerV1_GetShortUrl_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Shortener_GetShortUrl_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.shortener_v1.ShortenerV1/GetShortUrl", runtime.WithHTTPPathPattern("/shortener/v1/shorten_url"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.shortener.Shortener/GetShortUrl", runtime.WithHTTPPathPattern("/shortener/v1/shorten_url"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ShortenerV1_GetShortUrl_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Shortener_GetShortUrl_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ShortenerV1_GetShortUrl_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Shortener_GetShortUrl_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_ShortenerV1_GetOriginalUrl_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Shortener_GetOriginalUrl_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.shortener_v1.ShortenerV1/GetOriginalUrl", runtime.WithHTTPPathPattern("/shortener/v1/original_url"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.shortener.Shortener/GetOriginalUrl", runtime.WithHTTPPathPattern("/shortener/v1/original_url"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ShortenerV1_GetOriginalUrl_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Shortener_GetOriginalUrl_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ShortenerV1_GetOriginalUrl_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Shortener_GetOriginalUrl_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -246,13 +246,13 @@ func RegisterShortenerV1HandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
-	pattern_ShortenerV1_GetShortUrl_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"shortener", "v1", "shorten_url"}, ""))
+	pattern_Shortener_GetShortUrl_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"shortener", "v1", "shorten_url"}, ""))
 
-	pattern_ShortenerV1_GetOriginalUrl_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"shortener", "v1", "original_url"}, ""))
+	pattern_Shortener_GetOriginalUrl_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"shortener", "v1", "original_url"}, ""))
 )
 
 var (
-	forward_ShortenerV1_GetShortUrl_0 = runtime.ForwardResponseMessage
+	forward_Shortener_GetShortUrl_0 = runtime.ForwardResponseMessage
 
-	forward_ShortenerV1_GetOriginalUrl_0 = runtime.ForwardResponseMessage
+	forward_Shortener_GetOriginalUrl_0 = runtime.ForwardResponseMessage
 )

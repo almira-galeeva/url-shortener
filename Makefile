@@ -11,17 +11,17 @@ install-go-deps:
 
 PHONY: generate
 generate:
-	mkdir -p pkg/shortener_v1
-	protoc --proto_path api/shortener_v1 --proto_path vendor.protogen \
-		   --go_out=pkg/shortener_v1 --go_opt=paths=source_relative \
+	mkdir -p pkg/shortener
+	protoc --proto_path api/shortener --proto_path vendor.protogen \
+		   --go_out=pkg/shortener --go_opt=paths=source_relative \
 		   --plugin=protoc-gen-go=bin/protoc-gen-go \
-		   --go-grpc_out=pkg/shortener_v1 --go-grpc_opt=paths=source_relative \
+		   --go-grpc_out=pkg/shortener --go-grpc_opt=paths=source_relative \
 		   --plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
-		   --grpc-gateway_out=pkg/shortener_v1 \
+		   --grpc-gateway_out=pkg/shortener \
 		   --plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
 		   --grpc-gateway_opt=logtostderr=true\
 		   --grpc-gateway_opt=paths=source_relative \
-		  api/shortener_v1/shortener.proto
+		  api/shortener/shortener.proto
 
 
 PHONY: vendor-proto

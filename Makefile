@@ -21,7 +21,10 @@ generate:
 		   --plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
 		   --grpc-gateway_opt=logtostderr=true\
 		   --grpc-gateway_opt=paths=source_relative \
+		   --validate_out lang=go:pkg/shortener --go_opt=paths=source_relative \
 		  api/shortener/shortener.proto
+	mv pkg/shortener/github.com/almira-galeeva/url-shortener/pkg/shortener/* pkg/shortener
+	rm -rf pkg/shortener/github.com
 
 
 PHONY: vendor-proto

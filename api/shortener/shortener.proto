@@ -9,14 +9,14 @@ option go_package = "github.com/almira-galeeva/url-shortener/pkg/shortener";
 service Shortener {
   rpc GetShortUrl (GetShortUrlRequest) returns (GetShortUrlResponse) {
     option (google.api.http) = {
-      post: "/shortener/v1/shorten_url"
+      post: "/shortener/short_url"
       body: "*"
     };
   }
 
   rpc GetOriginalUrl (GetOriginalUrlRequest) returns (GetOriginalUrlResponse) {
     option (google.api.http) = {
-      get: "/shortener/v1/original_url"
+      get: "/shortener/original_url/{short_url}"
     };
   }
 }

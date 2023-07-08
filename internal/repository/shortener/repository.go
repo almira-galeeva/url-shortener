@@ -1,6 +1,6 @@
 package repository
 
-//go:generate mockgen --build_flags=--mod=mod -destination=mocks/mock_shortener_repository.go -package=mocks . Repository
+//go:generate mockgen --build_flags=--mod=mod -destination=mocks/mock_repository.go -package=mocks . Repository
 
 import (
 	"context"

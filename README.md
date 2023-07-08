@@ -3,27 +3,60 @@
 
 ## API
 ### Метод POST, который сохраняет оригинальный URL в базе и возвращает сокращенный.
-**POST** `{base_url}/shortener/short_url`
+##### HTTP
+**POST**: `{base_url}/shortener/short_url`
 В теле запроса передается оригинальная ссылка:
 ```
-{"original_url": "https://www.ozon.ru/"}
+{"original_url": "https://github.com/almira-galeeva/url-shortener"}
 ```
 
 В ответе придет сокращенная ссылка:
 ```
 {
-    "shortUrl": "hjgfhjl"
+    "shortUrl": "https://shorturl.com/LTiekH83dR"
+}
+```
+##### GRPC
+`Shortener/GetShortUrl`
+В Message передается оригинальная ссылка ссылка
+```
+{
+    "original_url": "https://github.com/almira-galeeva/url-shortener"
+}
+```
+В ответе придется сокращенная ссылка:
+```
+{
+    "short_url": "https://shorturl.com/LTiekH83dR"
 }
 ```
 
 ### Метод GET, который принимает сокращенный URL и возвращает оригинальный.
-**GET** `{base_url}/shortener/original_url/{short_url}`
+##### HTTP
+**GET**: `{base_url}/shortener/original_url/{short_url}`
 
 В ответе придет оригинальная ссылка:
 ```
 {
-    "originalUrl": "ut sit"
+    "originalUrl": "https://github.com/almira-galeeva/url-shortener"
+}
+```
+##### GRPC
+`Shortener/GetOriginalUrl`
+В Message передается сокращенная ссылка
+```
+{
+    "short_url": "https://shorturl.com/LTiekH83dR"
+}
+```
+В ответе придется оригинальная ссылка:
+```
+{
+    "original_url": "https://github.com/almira-galeeva/url-shortener"
 }
 ```
 
-
+При попытке передать в любой метод строку, не являющуюся ссылкой, получим ошибку:
+```
+parse "{переданная невалидная ссылка}": invalid URI for request
+```

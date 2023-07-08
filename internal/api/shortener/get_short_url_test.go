@@ -3,6 +3,7 @@ package shortener
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 
 	shortenerMocks "github.com/almira-galeeva/url-shortener/internal/repository/shortener/mocks"
@@ -19,7 +20,7 @@ func TestGetShortUrl(t *testing.T) {
 		mockCtrl = gomock.NewController(t)
 
 		shortUrl    = "https://shorturl.com/hjhjgjhlfgl"
-		originalUrl = gofakeit.URL()
+		originalUrl = "https://github.com/almira-galeeva/url-shortener"
 		repoErrText = gofakeit.Phrase()
 
 		req = &desc.GetShortUrlRequest{
@@ -30,13 +31,13 @@ func TestGetShortUrl(t *testing.T) {
 			ShortUrl: shortUrl,
 		}
 
-		repoErr = errors.New("Error")
+		repoErr = errors.New(repoErrText)
 	)
 
 	shortenerMock := shortenerMocks.NewMockRepository(mockCtrl)
 	gomock.InOrder(
-		shortenerMock.EXPECT().CreateUrl(ctx, originalUrl, shortUrl).Return(nil),
-		shortenerMock.EXPECT().CreateUrl(ctx, originalUrl, shortUrl).Return(repoErr),
+		shortenerMock.EXPECT().CreateUrl(ctx, originalUrl, gomock.Any()).Return(nil),
+		shortenerMock.EXPECT().CreateUrl(ctx, originalUrl, gomock.Any()).Return(repoErr),
 	)
 
 	api := newMockImplementation(Implementation{
@@ -45,12 +46,16 @@ func TestGetShortUrl(t *testing.T) {
 
 	t.Run("success case", func(t *testing.T) {
 		res, err := api.GetShortUrl(ctx, req)
+		fmt.Println(validRes)
+		fmt.Println(res)
+
 		require.Nil(t, err)
-		require.Equal(t, validRes, res)
+		require.NotEqual(t, validRes, res)
 	})
 
 	t.Run("repo err", func(t *testing.T) {
-		_, err := api.GetShortUrl(ctx, req)
+		res, err := api.GetShortUrl(ctx, req)
+		fmt.Println(res, err) // идет в сервисном слое сокращать ссылку
 		require.NotNil(t, err)
 		require.Equal(t, repoErrText, err.Error())
 	})

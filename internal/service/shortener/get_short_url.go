@@ -2,24 +2,33 @@ package shortener
 
 import (
 	"context"
-	"strings"
+	"math/rand"
+	"net/url"
+	"time"
 )
 
-func generateShortUrl(originalUrl string) (string, error) {
-	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
-	shortUrl := make([]string, 0, 10)
-	shortUrl = append(shortUrl, "https://shorturl/")
+func generateShortUrl(lenght int) (string, error) {
+	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	for _, byte := range originalUrl {
-		ind := int(byte) % len(alphabet)
-		shortUrl = append(shortUrl, string(alphabet[ind]))
+	alphabet := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_")
+
+	shortUrl := make([]rune, lenght)
+
+	for i := range shortUrl {
+		shortUrl[i] = alphabet[rnd.Intn(len(alphabet))]
 	}
 
-	return strings.Join(shortUrl, ""), nil
+	return string(shortUrl), nil
 }
 
 func (s *service) GetShortUrl(ctx context.Context, originalUrl string) (string, error) {
-	shortUrl, err := generateShortUrl(originalUrl)
+	_, err := url.ParseRequestURI(originalUrl)
+	if err != nil {
+		return "", err
+	}
+
+	length := 10
+	shortUrl, err := generateShortUrl(length)
 	if err != nil {
 		return "", err
 	}
@@ -29,5 +38,5 @@ func (s *service) GetShortUrl(ctx context.Context, originalUrl string) (string, 
 		return "", err
 	}
 
-	return shortUrl, nil
+	return "https://shorturl/" + shortUrl, nil
 }

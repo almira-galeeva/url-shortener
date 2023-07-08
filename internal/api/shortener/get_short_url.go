@@ -7,11 +7,6 @@ import (
 )
 
 func (i *Implementation) GetShortUrl(ctx context.Context, req *desc.GetShortUrlRequest) (*desc.GetShortUrlResponse, error) {
-	err := req.Validate()
-	if err != nil {
-		return nil, err
-	}
-
 	shortUrl, err := i.shortenerService.GetShortUrl(ctx, req.GetOriginalUrl())
 	if err != nil {
 		return nil, err

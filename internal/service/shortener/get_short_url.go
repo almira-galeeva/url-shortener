@@ -38,5 +38,5 @@ func (s *service) GetShortUrl(ctx context.Context, originalUrl string) (string, 
 		return "", err
 	}
 
-	return "https://shorturl/" + shortUrl, nil
+	return urlPrefix + shortUrl, nil
 }

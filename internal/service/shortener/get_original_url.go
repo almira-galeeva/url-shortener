@@ -13,7 +13,6 @@ func (s *service) GetOriginalUrl(ctx context.Context, shortUrl string) (string, 
 		return "", err
 	}
 
-	urlPrefix := "https://shorturl/"
 	if !strings.HasPrefix(shortUrl, urlPrefix) {
 		return "", fmt.Errorf("Short url should start with %s", urlPrefix)
 	}

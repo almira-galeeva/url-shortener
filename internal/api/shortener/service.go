@@ -16,3 +16,10 @@ func NewImplementation(shortenerService shortenerService.Service) *Implementatio
 		shortenerService: shortenerService,
 	}
 }
+
+func newMockImplementation(i Implementation) *Implementation {
+	return &Implementation{
+		desc.UnimplementedShortenerServer{},
+		i.shortenerService,
+	}
+}

@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
 	irepo "github.com/almira-galeeva/url-shortener/internal/repository/shortener"
@@ -21,12 +22,33 @@ func NewRepository(pool *pgxpool.Pool) irepo.Repository {
 }
 
 func (r *repository) CreateUrl(ctx context.Context, originalUrl string, shortUrl string) error {
-	builder := sq.Insert(tableName).
+	builderCheck := sq.Select("original_url").
+		PlaceholderFormat(sq.Dollar).
+		From(tableName).
+		Where(sq.Eq{"original_url": originalUrl}).
+		Limit(1)
+
+	query, args, err := builderCheck.ToSql()
+	if err != nil {
+		return err
+	}
+
+	var exists string
+	err = r.pool.QueryRow(ctx, query, args...).Scan(&exists)
+	if err != nil {
+		return err
+	}
+
+	if exists == originalUrl {
+		return fmt.Errorf("Url %s already exists in db", originalUrl)
+	}
+
+	builderInsert := sq.Insert(tableName).
 		PlaceholderFormat(sq.Dollar).
 		Columns("original_url, short_url").
 		Values(originalUrl, shortUrl)
 
-	query, args, err := builder.ToSql()
+	query, args, err = builderInsert.ToSql()
 	if err != nil {
 		return err
 	}

@@ -18,6 +18,7 @@
 ```
 ##### GRPC
 `Shortener/GetShortUrl`
+
 В Message передается оригинальная ссылка ссылка
 ```
 {
@@ -43,6 +44,7 @@
 ```
 ##### GRPC
 `Shortener/GetOriginalUrl`
+
 В Message передается сокращенная ссылка
 ```
 {
@@ -55,6 +57,7 @@
     "original_url": "https://github.com/almira-galeeva/url-shortener"
 }
 ```
+
 
 При попытке передать в любой метод строку, не являющуюся ссылкой, получим ошибку:
 ```

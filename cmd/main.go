@@ -100,7 +100,7 @@ func runGRPC(ctx context.Context, cfg *config.Config) error {
 		shortenerRepository = dbShortenerRepo.NewRepository(dbc)
 	}
 
-	shortenerService := shortenerService.NewService(shortenerRepository, "https://shorturl.com/", 10)
+	shortenerService := shortenerService.NewService(shortenerRepository, cfg.URLPREFIX, cfg.URLLENGTH)
 	desc.RegisterShortenerServer(s, impl.NewImplementation(shortenerService))
 
 	log.Printf("GRPC Server is running on host: %s", cfg.GRPC.GetAddress())

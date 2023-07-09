@@ -26,9 +26,11 @@ type DB struct {
 
 // Config ...
 type Config struct {
-	HTTP HTTP `json:"http"`
-	GRPC GRPC `json:"grpc"`
-	DB   DB   `json:"db"`
+	HTTP      HTTP   `json:"http"`
+	GRPC      GRPC   `json:"grpc"`
+	DB        DB     `json:"db"`
+	URLLENGTH int    `json:"url_lenght"`
+	URLPREFIX string `json:"url_prefix"`
 }
 
 // NewConfig ...

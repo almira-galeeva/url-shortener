@@ -32,6 +32,7 @@ func (s *service) GetShortUrl(ctx context.Context, originalUrl string) (string, 
 		return "", err
 	}
 
+	// check if generated url has to be regenerated
 	for {
 		redoShort, err := s.shortenerRepository.CreateUrl(ctx, originalUrl, shortUrl)
 		if err != nil {

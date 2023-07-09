@@ -1,18 +1,19 @@
-FROM golang:alpine AS builder
+FROM golang:1.18.3-alpine AS builder
 
-WORKDIR /build
+COPY . /github.com/almira-galeeva/url-shortener/
+WORKDIR /github.com/almira-galeeva/url-shortener/
 
-ADD go.mod .
+RUN go mod download
+RUN go build -o ./bin/url_shortener cmd/main.go
 
-COPY . .
+FROM alpine:latest
 
-RUN go build -o service cmd/main.go
+WORKDIR /root/
 
-FROM alpine
+COPY --from=builder /github.com/almira-galeeva/url-shortener/bin/url_shortener .
+COPY --from=builder /github.com/almira-galeeva/url-shortener/config/ /root/config/
 
-WORKDIR /build
+EXPOSE 50051
+EXPOSE 8080
 
-COPY --from=builder /build/service /build/service
-COPY --from=builder /build/config/config.json /build/config/config.json
-
-CMD ["./service"]
+CMD ["./url_shortener"]

@@ -2,4 +2,4 @@
 .DS_Store
 /vendor.protogen/
 bin/
-service
+url_shortener

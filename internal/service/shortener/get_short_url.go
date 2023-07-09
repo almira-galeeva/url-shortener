@@ -27,8 +27,7 @@ func (s *service) GetShortUrl(ctx context.Context, originalUrl string) (string, 
 		return "", err
 	}
 
-	length := 10
-	shortUrl, err := generateShortUrl(length)
+	shortUrl, err := generateShortUrl(s.urlLength)
 	if err != nil {
 		return "", err
 	}
@@ -38,5 +37,5 @@ func (s *service) GetShortUrl(ctx context.Context, originalUrl string) (string, 
 		return "", err
 	}
 
-	return urlPrefix + shortUrl, nil
+	return s.urlPrefix + shortUrl, nil
 }

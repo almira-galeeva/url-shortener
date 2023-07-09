@@ -22,7 +22,7 @@ func NewRepository(pool *pgxpool.Pool) irepo.Repository {
 }
 
 func (r *repository) CreateUrl(ctx context.Context, originalUrl string, shortUrl string) error {
-	builderCheck := sq.Select("original_url").
+	builderCheck := sq.Select("COUNT(*) AS cnt").
 		PlaceholderFormat(sq.Dollar).
 		From(tableName).
 		Where(sq.Eq{"original_url": originalUrl}).
@@ -33,13 +33,14 @@ func (r *repository) CreateUrl(ctx context.Context, originalUrl string, shortUrl
 		return err
 	}
 
-	var exists string
-	err = r.pool.QueryRow(ctx, query, args...).Scan(&exists)
+	var cnt int
+	err = r.pool.QueryRow(ctx, query, args...).Scan(&cnt)
 	if err != nil {
 		return err
+
 	}
 
-	if exists == originalUrl {
+	if cnt != 0 {
 		return fmt.Errorf("Url %s already exists in db", originalUrl)
 	}
 

@@ -11,5 +11,6 @@
       "host": "localhost",
       "port": "8080"
     },
-    "urlLenght": 10
+    "urlLenght": 10,
+    "urlPrefix": "https://shorturl.com/"
 }

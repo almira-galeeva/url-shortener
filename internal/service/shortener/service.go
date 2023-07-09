@@ -6,8 +6,6 @@ import (
 	shortenerRepository "github.com/almira-galeeva/url-shortener/internal/repository/shortener"
 )
 
-var urlPrefix = "https://shorturl.com/"
-
 type Service interface {
 	GetShortUrl(ctx context.Context, originalUrl string) (string, error)
 	GetOriginalUrl(ctx context.Context, shortUrl string) (string, error)
@@ -15,11 +13,15 @@ type Service interface {
 
 type service struct {
 	shortenerRepository shortenerRepository.Repository
+	urlPrefix           string
+	urlLength           int
 }
 
-func NewService(shortenerRepository shortenerRepository.Repository) Service {
+func NewService(shortenerRepository shortenerRepository.Repository, urlPrefix string, urlLength int) Service {
 	return &service{
 		shortenerRepository: shortenerRepository,
+		urlPrefix:           urlPrefix,
+		urlLength:           urlLength,
 	}
 }
 

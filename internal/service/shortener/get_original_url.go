@@ -13,11 +13,11 @@ func (s *service) GetOriginalUrl(ctx context.Context, shortUrl string) (string, 
 		return "", err
 	}
 
-	if !strings.HasPrefix(shortUrl, urlPrefix) {
-		return "", fmt.Errorf("Short url should start with %s", urlPrefix)
+	if !strings.HasPrefix(shortUrl, s.urlPrefix) {
+		return "", fmt.Errorf("Short url should start with %s", s.urlPrefix)
 	}
 
-	originUrl, err := s.shortenerRepository.GetOriginalUrl(ctx, shortUrl[len(urlPrefix):])
+	originUrl, err := s.shortenerRepository.GetOriginalUrl(ctx, shortUrl[len(s.urlPrefix):])
 	if err != nil {
 		return "", err
 	}

@@ -3,7 +3,6 @@ package shortener
 import (
 	"context"
 	"errors"
-	"fmt"
 	"testing"
 
 	shortenerMocks "github.com/almira-galeeva/url-shortener/internal/repository/shortener/mocks"
@@ -21,10 +20,15 @@ func TestGetShortUrl(t *testing.T) {
 
 		shortUrl    = "https://shorturl.com/hjhjgjhlfgl"
 		originalUrl = "https://github.com/almira-galeeva/url-shortener"
+		invalidUrl  = "invalidUrl"
 		repoErrText = gofakeit.Phrase()
 
 		req = &desc.GetShortUrlRequest{
 			OriginalUrl: originalUrl,
+		}
+
+		reqInvalid = &desc.GetOriginalUrlRequest{
+			ShortUrl: invalidUrl,
 		}
 
 		validRes = &desc.GetShortUrlResponse{
@@ -52,9 +56,13 @@ func TestGetShortUrl(t *testing.T) {
 	})
 
 	t.Run("repo err", func(t *testing.T) {
-		res, err := api.GetShortUrl(ctx, req)
-		fmt.Println(res, err) // идет в сервисном слое сокращать ссылку
+		_, err := api.GetShortUrl(ctx, req)
 		require.NotNil(t, err)
 		require.Equal(t, repoErrText, err.Error())
+	})
+
+	t.Run("invalid url err", func(t *testing.T) {
+		_, err := api.GetOriginalUrl(ctx, reqInvalid)
+		require.Error(t, err)
 	})
 }

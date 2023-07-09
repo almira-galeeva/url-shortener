@@ -3,7 +3,6 @@ package shortener
 import (
 	"context"
 	"errors"
-	"fmt"
 	"testing"
 
 	shortenerMocks "github.com/almira-galeeva/url-shortener/internal/repository/shortener/mocks"
@@ -19,11 +18,10 @@ func TestGetOriginalUrl(t *testing.T) {
 		ctx      = context.Background()
 		mockCtrl = gomock.NewController(t)
 
-		shortUrl       = "https://shorturl.com/hjhjgjhlfgl"
-		originalUrl    = gofakeit.URL()
-		invalidUrl     = "invalidUrl"
-		repoErrText    = gofakeit.Phrase()
-		repoErrInvText = fmt.Sprintf("parse \"%s\": invalid URI for request", invalidUrl)
+		shortUrl    = "https://shorturl.com/hjhjgjhlfgl"
+		originalUrl = gofakeit.URL()
+		invalidUrl  = "invalidUrl"
+		repoErrText = gofakeit.Phrase()
 
 		req = &desc.GetOriginalUrlRequest{
 			ShortUrl: shortUrl,
@@ -37,15 +35,13 @@ func TestGetOriginalUrl(t *testing.T) {
 			OriginalUrl: originalUrl,
 		}
 
-		repoErr        = errors.New(repoErrText)
-		repoErrInvalid = errors.New(repoErrInvText)
+		repoErr = errors.New(repoErrText)
 	)
 
 	shortenerMock := shortenerMocks.NewMockRepository(mockCtrl)
 	gomock.InOrder(
 		shortenerMock.EXPECT().GetOriginalUrl(ctx, gomock.Any()).Return(originalUrl, nil),
 		shortenerMock.EXPECT().GetOriginalUrl(ctx, gomock.Any()).Return("", repoErr),
-		shortenerMock.EXPECT().GetOriginalUrl(ctx, gomock.Any()).Return("", repoErrInvalid),
 	)
 
 	api := newMockImplementation(Implementation{

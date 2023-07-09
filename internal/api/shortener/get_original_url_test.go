@@ -19,25 +19,33 @@ func TestGetOriginalUrl(t *testing.T) {
 		ctx      = context.Background()
 		mockCtrl = gomock.NewController(t)
 
-		shortUrl    = "https://shorturl.com/hjhjgjhlfgl"
-		originalUrl = gofakeit.URL()
-		repoErrText = gofakeit.Phrase()
+		shortUrl       = "https://shorturl.com/hjhjgjhlfgl"
+		originalUrl    = gofakeit.URL()
+		invalidUrl     = "invalidUrl"
+		repoErrText    = gofakeit.Phrase()
+		repoErrInvText = fmt.Sprintf("parse \"%s\": invalid URI for request", invalidUrl)
 
 		req = &desc.GetOriginalUrlRequest{
 			ShortUrl: shortUrl,
+		}
+
+		reqInvalid = &desc.GetOriginalUrlRequest{
+			ShortUrl: invalidUrl,
 		}
 
 		validRes = &desc.GetOriginalUrlResponse{
 			OriginalUrl: originalUrl,
 		}
 
-		repoErr = errors.New(repoErrText)
+		repoErr        = errors.New(repoErrText)
+		repoErrInvalid = errors.New(repoErrInvText)
 	)
 
 	shortenerMock := shortenerMocks.NewMockRepository(mockCtrl)
 	gomock.InOrder(
 		shortenerMock.EXPECT().GetOriginalUrl(ctx, gomock.Any()).Return(originalUrl, nil),
 		shortenerMock.EXPECT().GetOriginalUrl(ctx, gomock.Any()).Return("", repoErr),
+		shortenerMock.EXPECT().GetOriginalUrl(ctx, gomock.Any()).Return("", repoErrInvalid),
 	)
 
 	api := newMockImplementation(Implementation{
@@ -52,8 +60,12 @@ func TestGetOriginalUrl(t *testing.T) {
 
 	t.Run("repo err", func(t *testing.T) {
 		_, err := api.GetOriginalUrl(ctx, req)
-		fmt.Println(err)
 		require.NotNil(t, err)
 		require.Equal(t, repoErrText, err.Error())
+	})
+
+	t.Run("invalid url err", func(t *testing.T) {
+		_, err := api.GetOriginalUrl(ctx, reqInvalid)
+		require.Error(t, err)
 	})
 }

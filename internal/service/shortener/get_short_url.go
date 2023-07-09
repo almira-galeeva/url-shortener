@@ -32,9 +32,15 @@ func (s *service) GetShortUrl(ctx context.Context, originalUrl string) (string, 
 		return "", err
 	}
 
-	err = s.shortenerRepository.CreateUrl(ctx, originalUrl, shortUrl)
-	if err != nil {
-		return "", err
+	for {
+		redoShort, err := s.shortenerRepository.CreateUrl(ctx, originalUrl, shortUrl)
+		if err != nil {
+			return "", err
+		}
+
+		if !redoShort {
+			break
+		}
 	}
 
 	return s.urlPrefix + shortUrl, nil

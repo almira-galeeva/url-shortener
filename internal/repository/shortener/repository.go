@@ -7,6 +7,6 @@ import (
 )
 
 type Repository interface {
-	CreateUrl(ctx context.Context, originalUrl string, shortUrl string) error
+	CreateUrl(ctx context.Context, originalUrl string, shortUrl string) (bool, error)
 	GetOriginalUrl(ctx context.Context, shortlUrl string) (string, error)
 }

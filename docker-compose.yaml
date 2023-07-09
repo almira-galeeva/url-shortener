@@ -16,8 +16,9 @@ services:
       - postgres_volume:/var/lib/postgresql/data
 
   migrator:
-    context: .
-    dockerfile: Dockerfile_migration
+    build: 
+      context: .
+      dockerfile: migration.Dockerfile
     restart: on-failure
     environment:
       DB_HOST: db
@@ -31,5 +32,4 @@ services:
       - "8080:8080"
     depends_on:
       - db
-    links:
-      - db
+      - migrator

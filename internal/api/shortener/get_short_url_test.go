@@ -36,8 +36,8 @@ func TestGetShortUrl(t *testing.T) {
 
 	shortenerMock := shortenerMocks.NewMockRepository(mockCtrl)
 	gomock.InOrder(
-		shortenerMock.EXPECT().CreateUrl(ctx, originalUrl, gomock.Any()).Return(nil),
-		shortenerMock.EXPECT().CreateUrl(ctx, originalUrl, gomock.Any()).Return(repoErr),
+		shortenerMock.EXPECT().CreateUrl(ctx, originalUrl, gomock.Any()).Return(false, nil),
+		shortenerMock.EXPECT().CreateUrl(ctx, originalUrl, gomock.Any()).Return(false, repoErr),
 	)
 
 	api := newMockImplementation(Implementation{
@@ -46,8 +46,6 @@ func TestGetShortUrl(t *testing.T) {
 
 	t.Run("success case", func(t *testing.T) {
 		res, err := api.GetShortUrl(ctx, req)
-		fmt.Println(validRes)
-		fmt.Println(res)
 
 		require.Nil(t, err)
 		require.NotEqual(t, validRes, res)

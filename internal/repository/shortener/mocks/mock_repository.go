@@ -35,11 +35,12 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // CreateUrl mocks base method.
-func (m *MockRepository) CreateUrl(arg0 context.Context, arg1, arg2 string) error {
+func (m *MockRepository) CreateUrl(arg0 context.Context, arg1, arg2 string) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUrl", arg0, arg1, arg2)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateUrl indicates an expected call of CreateUrl.

@@ -1,6 +1,10 @@
 # url-shortener
 Сервис, предоставляющий API по сокращению ссылок.
 
+Чтобы поднять сервис локально, необходимо 
+- склонировать репозиторий
+- ввести команду `make run`
+
 ## API
 ### Метод POST, который сохраняет оригинальный URL в базе и возвращает сокращенный.
 ##### HTTP
@@ -34,7 +38,8 @@
 
 ### Метод GET, который принимает сокращенный URL и возвращает оригинальный.
 ##### HTTP
-**GET**: `{base_url}/shortener/original_url/{short_url}`
+Передаем в ручку хэш, сформированный в методе POST
+**GET**: `{base_url}/shortener/original_url/{short_url_hash}`
 
 В ответе придет оригинальная ссылка:
 ```
@@ -45,10 +50,10 @@
 ##### GRPC
 `Shortener/GetOriginalUrl`
 
-В Message передается сокращенная ссылка
+В Message передается хэш, сформированный в методе POST
 ```
 {
-    "short_url": "https://shorturl.com/LTiekH83dR"
+    "short_url": "LTiekH83dR"
 }
 ```
 В ответе придется оригинальная ссылка:
@@ -72,8 +77,4 @@ Url {переданная ссылка} already exists in db
 3. При попытке передать в метод GET ссылку, которой нет в базе данных/памяти, получаем ошибку
 ```
 no rows in result set
-```
-4. При попытке передать в метод GET ссылку, которая начинается не с `https://shorturl.com/` (параметр `url_prefix`, который задается в конфиге `config/config.json`), получаем ошибку:
-```
-Short url should start with https://shorturl.com/
 ```

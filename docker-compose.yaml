@@ -24,12 +24,3 @@ services:
       DB_HOST: db
     ports:
       - "5444:5432"
-
-  app:
-    build: .
-    ports:
-      - "50051:50051"
-      - "8080:8080"
-    depends_on:
-      - db
-      - migrator

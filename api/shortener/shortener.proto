@@ -2,23 +2,11 @@ syntax = "proto3";
 
 package api.shortener;
 
-import "google/api/annotations.proto";
-
 option go_package = "github.com/almira-galeeva/url-shortener/pkg/shortener";
 
 service Shortener {
-  rpc GetShortUrl (GetShortUrlRequest) returns (GetShortUrlResponse) {
-    option (google.api.http) = {
-      post: "/shortener/short_url"
-      body: "*"
-    };
-  }
-
-  rpc GetOriginalUrl (GetOriginalUrlRequest) returns (GetOriginalUrlResponse) {
-    option (google.api.http) = {
-      get: "/shortener/original_url/{short_url}"
-    };
-  }
+  rpc GetShortUrl (GetShortUrlRequest) returns (GetShortUrlResponse);
+  rpc GetOriginalUrl (GetOriginalUrlRequest) returns (GetOriginalUrlResponse);
 }
 
 message GetShortUrlRequest {
@@ -35,4 +23,4 @@ message GetOriginalUrlRequest {
 
 message GetOriginalUrlResponse {
     string original_url = 1;
-} 
+}

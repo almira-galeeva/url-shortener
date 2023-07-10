@@ -8,8 +8,6 @@ import (
 	irepo "github.com/almira-galeeva/url-shortener/internal/repository/shortener"
 )
 
-const tableName = "urls"
-
 type repository struct {
 	shortUrls    map[string]string
 	originalUrls map[string]struct{}

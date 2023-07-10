@@ -20,15 +20,10 @@ func TestGetOriginalUrl(t *testing.T) {
 
 		shortUrl    = "https://shorturl.com/hjhjgjhlfgl"
 		originalUrl = gofakeit.URL()
-		invalidUrl  = "invalidUrl"
 		repoErrText = gofakeit.Phrase()
 
 		req = &desc.GetOriginalUrlRequest{
 			ShortUrl: shortUrl,
-		}
-
-		reqInvalid = &desc.GetOriginalUrlRequest{
-			ShortUrl: invalidUrl,
 		}
 
 		validRes = &desc.GetOriginalUrlResponse{
@@ -58,10 +53,5 @@ func TestGetOriginalUrl(t *testing.T) {
 		_, err := api.GetOriginalUrl(ctx, req)
 		require.NotNil(t, err)
 		require.Equal(t, repoErrText, err.Error())
-	})
-
-	t.Run("invalid url err", func(t *testing.T) {
-		_, err := api.GetOriginalUrl(ctx, reqInvalid)
-		require.Error(t, err)
 	})
 }

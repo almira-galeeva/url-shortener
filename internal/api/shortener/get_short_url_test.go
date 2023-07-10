@@ -27,8 +27,8 @@ func TestGetShortUrl(t *testing.T) {
 			OriginalUrl: originalUrl,
 		}
 
-		reqInvalid = &desc.GetOriginalUrlRequest{
-			ShortUrl: invalidUrl,
+		reqInvalid = &desc.GetShortUrlRequest{
+			OriginalUrl: invalidUrl,
 		}
 
 		validRes = &desc.GetShortUrlResponse{
@@ -62,7 +62,7 @@ func TestGetShortUrl(t *testing.T) {
 	})
 
 	t.Run("invalid url err", func(t *testing.T) {
-		_, err := api.GetOriginalUrl(ctx, reqInvalid)
+		_, err := api.GetShortUrl(ctx, reqInvalid)
 		require.Error(t, err)
 	})
 }

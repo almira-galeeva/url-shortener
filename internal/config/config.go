@@ -29,8 +29,8 @@ type Config struct {
 	HTTP      HTTP   `json:"http"`
 	GRPC      GRPC   `json:"grpc"`
 	DB        DB     `json:"db"`
-	URLLENGTH int    `json:"url_lenght"`
-	URLPREFIX string `json:"url_prefix"`
+	UrlLength int    `json:"url_length"`
+	UrlPrefix string `json:"url_prefix"`
 }
 
 // NewConfig ...
@@ -53,6 +53,6 @@ func (g *GRPC) GetAddress() string {
 	return net.JoinHostPort(g.Host, g.Port)
 }
 
-func (g *HTTP) GetAddress() string {
-	return net.JoinHostPort(g.Host, g.Port)
+func (h *HTTP) GetAddress() string {
+	return net.JoinHostPort(h.Host, h.Port)
 }

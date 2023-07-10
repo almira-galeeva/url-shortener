@@ -6,7 +6,7 @@ import (
 	desc "github.com/almira-galeeva/url-shortener/pkg/shortener"
 )
 
-func (i *Implementation) GetOriginalUrl(ctx context.Context, req *desc.GetOriginalUrlRequest) (*desc.GetOriginalUrlResponse, error) {
+func (i *Implementation) GetShortUrlGetOriginalUrl(ctx context.Context, req *desc.GetOriginalUrlRequest) (*desc.GetOriginalUrlResponse, error) {
 	originalUrl, err := i.shortenerService.GetOriginalUrl(ctx, req.GetShortUrl())
 	if err != nil {
 		return nil, err

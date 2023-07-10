@@ -8,15 +8,14 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4/pgxpool"
-
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
-	impl "github.com/almira-galeeva/url-shortener/internal/api/shortener"
-	config "github.com/almira-galeeva/url-shortener/internal/config"
+	httpImpl "github.com/almira-galeeva/url-shortener/internal/api/http"
+	grpcImpl "github.com/almira-galeeva/url-shortener/internal/api/shortener"
+	"github.com/almira-galeeva/url-shortener/internal/config"
 	iShortenerRepo "github.com/almira-galeeva/url-shortener/internal/repository/shortener"
 	dbShortenerRepo "github.com/almira-galeeva/url-shortener/internal/repository/shortener/db"
 	inMemoryShortenerRepo "github.com/almira-galeeva/url-shortener/internal/repository/shortener/inmemory"
@@ -39,58 +38,14 @@ func main() {
 		log.Fatalf("Failed to parse config: %s", err.Error())
 	}
 
-	wg := sync.WaitGroup{}
-	wg.Add(2)
-
-	go func() {
-		defer wg.Done()
-		err := runHTTP(ctx, cfg)
-		if err != nil {
-			log.Fatalf("Failed to run HTTP server: %s", err.Error())
-		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		err := runGRPC(ctx, cfg)
-		if err != nil {
-			log.Fatalf("Failed to run gRPC server: %s", err.Error())
-		}
-	}()
-
-	wg.Wait()
-}
-
-func runHTTP(ctx context.Context, cfg *config.Config) error {
-	mux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := desc.RegisterShortenerHandlerFromEndpoint(ctx, mux, cfg.GRPC.GetAddress(), opts)
-	if err != nil {
-		return err
-	}
-
-	log.Printf("HTTP Server is running on host: %s", cfg.HTTP.GetAddress())
-
-	return http.ListenAndServe(cfg.HTTP.GetAddress(), mux)
-}
-
-func runGRPC(ctx context.Context, cfg *config.Config) error {
-	listener, err := net.Listen("tcp", cfg.GRPC.GetAddress())
-	if err != nil {
-		return err
-	}
-
-	s := grpc.NewServer()
-	reflection.Register(s)
-
 	pgCfg, err := pgxpool.ParseConfig(cfg.DB.DSN)
 	if err != nil {
-		return err
+		log.Fatalf("Failed to parse DSN: %s", err.Error())
 	}
 
 	dbc, err := pgxpool.ConnectConfig(ctx, pgCfg)
 	if err != nil {
-		return err
+		log.Fatalf("Failed to connect to DB: %s", err.Error())
 	}
 
 	var shortenerRepository iShortenerRepo.Repository
@@ -100,10 +55,56 @@ func runGRPC(ctx context.Context, cfg *config.Config) error {
 		shortenerRepository = dbShortenerRepo.NewRepository(dbc)
 	}
 
-	shortenerService := shortenerService.NewService(shortenerRepository, cfg.URLPREFIX, cfg.URLLENGTH)
-	desc.RegisterShortenerServer(s, impl.NewImplementation(shortenerService))
+	shortenerSrv := shortenerService.NewService(shortenerRepository, cfg.UrlPrefix, cfg.UrlLength)
 
-	log.Printf("GRPC Server is running on host: %s", cfg.GRPC.GetAddress())
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		err = runHTTP(shortenerSrv, cfg.HTTP)
+		if err != nil {
+			log.Fatalf("Failed to run HTTP server: %s", err.Error())
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		err = runGRPC(shortenerSrv, cfg.GRPC)
+		if err != nil {
+			log.Fatalf("Failed to run gRPC server: %s", err.Error())
+		}
+	}()
+
+	wg.Wait()
+}
+
+func runHTTP(shortenerSrv shortenerService.Service, cfg config.HTTP) error {
+	router := mux.NewRouter()
+	router.StrictSlash(true)
+
+	impl := httpImpl.NewImplementation(shortenerSrv)
+
+	router.HandleFunc("/shortener/short_url", impl.GetShortUrl).Methods("POST")
+	router.HandleFunc("/shortener/original_url/{short_url}", impl.GetOriginalUrl).Methods("GET")
+
+	log.Printf("HTTP Server is running on host: %s", cfg.GetAddress())
+	return http.ListenAndServe(cfg.GetAddress(), router)
+
+}
+
+func runGRPC(shortenerSrv shortenerService.Service, cfg config.GRPC) error {
+	listener, err := net.Listen("tcp", cfg.GetAddress())
+	if err != nil {
+		return err
+	}
+
+	s := grpc.NewServer()
+	reflection.Register(s)
+
+	desc.RegisterShortenerServer(s, grpcImpl.NewImplementation(shortenerSrv))
+
+	log.Printf("GRPC Server is running on host: %s", cfg.GetAddress())
 	if err = s.Serve(listener); err != nil {
 		return err
 	}
